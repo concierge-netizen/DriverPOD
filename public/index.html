@@ -251,10 +251,16 @@ var CLOUDINARY_PRESET = 'hands_pod_photos';
 var LOOKUP_ENDPOINT   = '/.netlify/functions/lookup-item';
 var SUBMIT_ENDPOINT   = '/.netlify/functions/submit-pod';
 
+// Parse PO number immediately
 var poNumber = '';
 try { poNumber = new URLSearchParams(window.location.search).get('po') || ''; } catch(e) {}
 
-// poDisplay set by fetchItem()
+// Set PO display immediately — no waiting
+if (poNumber) {
+  document.getElementById('poDisplay').textContent      = poNumber;
+  document.getElementById('accountDisplay').textContent = 'Loading...';
+  document.getElementById('projectDisplay').textContent = 'Loading...';
+}
 
 function fetchItem(attempt) {
   attempt = attempt || 1;
