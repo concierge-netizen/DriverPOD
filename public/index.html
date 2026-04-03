@@ -262,54 +262,27 @@ if (poNumber) {
   document.getElementById('projectDisplay').textContent = 'Loading...';
 }
 
-function fetchItem(attempt) {
-  attempt = attempt || 1;
+function fetchItem() {
   var po = '';
   try { po = new URLSearchParams(window.location.search).get('po') || ''; } catch(e) {}
-  if (!po) {
-    document.getElementById('poDisplay').textContent      = '—';
-    document.getElementById('accountDisplay').textContent = '—';
-    document.getElementById('projectDisplay').textContent = '—';
-    return;
-  }
+  if (!po) return;
   poNumber = po;
   document.getElementById('poDisplay').textContent = po;
-
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', LOOKUP_ENDPOINT + '?po=' + po, true);
-  xhr.timeout = 8000;
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState !== 4) return;
-    if (xhr.status === 200) {
-      try {
-        var d = JSON.parse(xhr.responseText);
-        document.getElementById('accountDisplay').textContent = d.account     || '—';
-        document.getElementById('projectDisplay').textContent = d.projectName || '—';
-      } catch(e) {
-        document.getElementById('accountDisplay').textContent = '—';
-        document.getElementById('projectDisplay').textContent = '—';
-      }
-    } else if (attempt < 3) {
-      setTimeout(function() { fetchItem(attempt + 1); }, 1000);
-    } else {
+  fetch(LOOKUP_ENDPOINT + '?po=' + po)
+    .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(d) {
+      document.getElementById('accountDisplay').textContent = d.account     || '—';
+      document.getElementById('projectDisplay').textContent = d.projectName || '—';
+    })
+    .catch(function() {
       document.getElementById('accountDisplay').textContent = '—';
       document.getElementById('projectDisplay').textContent = '—';
-    }
-  };
-  xhr.ontimeout = function() {
-    if (attempt < 3) { setTimeout(function() { fetchItem(attempt + 1); }, 1000); }
-  };
-  xhr.onerror = function() {
-    if (attempt < 3) { setTimeout(function() { fetchItem(attempt + 1); }, 1000); }
-  };
-  xhr.send();
+    });
 }
 
-// Run immediately + retry after DOM ready as backup
+// Run immediately, then again after 500ms as a safety net
 fetchItem();
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function() { fetchItem(); });
-}
+setTimeout(fetchItem, 500);
 
 function previewPhoto(n) {
   var f = document.getElementById('file'+n).files[0];
