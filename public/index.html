@@ -16,26 +16,20 @@
 }
 html{scroll-behavior:smooth;}
 body{background:var(--black);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.6;min-height:100vh;padding-bottom:60px;}
-
 .site-header{background:var(--black);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;}
 .header-inner{max-width:480px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;}
 .header-logo img{height:28px;display:block;}
 .driver-badge{background:rgba(160,214,180,0.10);border:1px solid rgba(160,214,180,0.25);border-radius:20px;padding:4px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);}
-
 .accent-bar{display:flex;height:3px;width:100%;}
 .accent-bar .dark{flex:0 0 68%;background:#1a1a1a;}
 .accent-bar .grn{flex:0 0 32%;background:var(--green);}
-
 .hero{background:var(--green);padding:12px 24px;text-align:center;}
 .hero p{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--black);}
-
 .page{max-width:480px;margin:0 auto;padding:32px 20px 0;}
-
 .intro{margin-bottom:28px;animation:fadeUp 0.4s ease both;}
 .intro h1{font-family:var(--font-heading);font-size:38px;letter-spacing:1px;color:var(--white);line-height:1;margin-bottom:8px;}
 .intro p{font-size:13px;color:var(--label);}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-
 .po-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:12px;animation:fadeUp 0.4s ease 0.05s both;}
 .po-dot{width:8px;height:8px;background:var(--green);border-radius:50%;flex-shrink:0;animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);}}
@@ -46,17 +40,10 @@ body{background:var(--black);color:var(--text);font-family:var(--font-body);font
 .po-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
 .po-value{font-size:15px;font-weight:600;color:var(--green);letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .po-value--secondary{font-size:13px;color:var(--text);font-weight:500;letter-spacing:0;}
-.po-loading{color:var(--muted);font-size:11px;font-style:italic;animation:blink 1.2s ease infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.4;}}
-
 .form-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px;animation:fadeUp 0.4s ease both;}
-.form-card:nth-child(1){animation-delay:0.08s;}
-.form-card:nth-child(2){animation-delay:0.13s;}
-.form-card:nth-child(3){animation-delay:0.18s;}
 .card-header{background:#1e1e1e;padding:10px 18px;border-bottom:1px solid var(--border);}
 .card-header p{font-size:9.5px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green);}
 .card-body{padding:20px 18px;}
-
 .photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .photo-zone{position:relative;background:#0f0f0f;border:2px dashed var(--border);border-radius:var(--radius);min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:border-color 0.25s,background 0.25s;padding:20px 12px;text-align:center;user-select:none;-webkit-user-select:none;}
 .photo-zone:hover{border-color:var(--green);background:rgba(160,214,180,0.04);}
@@ -71,7 +58,6 @@ body{background:var(--black);color:var(--text);font-family:var(--font-body);font
 .check-badge{position:absolute;top:8px;right:8px;width:22px;height:22px;background:var(--green);border-radius:50%;display:none;align-items:center;justify-content:center;font-size:11px;color:var(--black);font-weight:700;}
 .has-photo .check-badge{display:flex;}
 .has-photo .zone-icon,.has-photo .zone-name,.has-photo .zone-hint{display:none;}
-
 .field{margin-bottom:16px;}
 .field:last-child{margin-bottom:0;}
 .field label{display:block;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--label);margin-bottom:8px;}
@@ -79,35 +65,29 @@ body{background:var(--black);color:var(--text);font-family:var(--font-body);font
 .field input[type="text"]{width:100%;background:#0f0f0f;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-body);font-size:14px;padding:10px 14px;outline:none;transition:border-color 0.2s;}
 .field input[type="text"]:focus{border-color:var(--green);}
 .field.has-error input[type="text"]{border-color:var(--red);}
-
 .progress-wrap{display:none;margin-bottom:16px;}
 .progress-wrap.show{display:block;}
 .progress-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:8px;}
 .progress-fill{height:100%;background:var(--green);border-radius:2px;width:0;transition:width 0.3s ease;}
 .progress-text{font-size:11px;color:var(--label);text-align:center;}
-
 .error-box{display:none;background:rgba(224,112,112,0.10);border:1px solid rgba(224,112,112,0.30);border-radius:var(--radius);padding:12px 16px;color:var(--red);font-size:13px;margin-bottom:16px;}
 .error-box.show{display:block;}
-
-
-.btn-preview{width:100%;background:transparent;color:var(--green);border:1px solid var(--green);border-radius:var(--radius);padding:14px 24px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:background 0.2s,color 0.2s,opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}
+.btn-submit{width:100%;background:var(--green);color:var(--black);border:none;border-radius:var(--radius);padding:16px 24px;font-family:var(--font-body);font-size:15px;font-weight:700;cursor:pointer;letter-spacing:0.5px;transition:background 0.2s,opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-submit:hover{background:var(--green2);}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-preview{width:100%;background:transparent;color:var(--green);border:1px solid var(--green);border-radius:var(--radius);padding:14px 24px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:background 0.2s,opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}
 .btn-preview:hover{background:rgba(160,214,180,0.10);}
 .btn-preview:disabled{opacity:0.4;cursor:not-allowed;}
 .preview-sent{display:none;background:rgba(160,214,180,0.10);border:1px solid rgba(160,214,180,0.30);border-radius:var(--radius);padding:12px 16px;font-size:13px;color:var(--green);margin-bottom:12px;text-align:center;}
 .preview-sent.show{display:block;}
 .step-actions{display:none;flex-direction:column;gap:0;}
 .step-actions.show{display:flex;}
-.btn-submit{width:100%;background:var(--green);color:var(--black);border:none;border-radius:var(--radius);padding:16px 24px;font-family:var(--font-body);font-size:15px;font-weight:700;cursor:pointer;letter-spacing:0.5px;transition:background 0.2s,opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
-.btn-submit:hover{background:var(--green2);}
-.btn-submit:disabled{opacity:0.5;cursor:not-allowed;}
 .btn-arrow{font-size:18px;}
-
 .success-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 24px;animation:fadeUp 0.5s ease both;}
 .success-screen.show{display:flex;}
 .success-icon{width:72px;height:72px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--black);margin-bottom:24px;}
 .success-screen h2{font-family:var(--font-heading);font-size:36px;color:var(--white);margin-bottom:12px;letter-spacing:1px;}
 .success-screen p{color:var(--label);font-size:14px;max-width:320px;}
-
 .site-footer{background:#0f0f0f;border-top:1px solid var(--border);padding:20px 24px;}
 .footer-inner{max-width:480px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;font-size:11px;color:var(--muted);}
 .footer-left p{line-height:1.6;}
@@ -208,12 +188,10 @@ body{background:var(--black);color:var(--text);font-family:var(--font-body);font
 
     <div class="error-box" id="errorBox"></div>
 
-    <!-- Step 1: Preview -->
     <button class="btn-preview" id="previewBtn" onclick="startPreview()">
       &#128064; Preview Email Before Sending
     </button>
 
-    <!-- Step 2: shown after preview sent -->
     <div class="preview-sent" id="previewSent"></div>
     <div class="step-actions" id="stepActions">
       <button class="btn-submit" id="submitBtn" onclick="startUpload()">
@@ -238,7 +216,7 @@ body{background:var(--black);color:var(--text);font-family:var(--font-body);font
   <div class="footer-inner">
     <div class="footer-left"><p>Concierge Desk</p><p class="brand-sub">HANDS Logistics</p></div>
     <div class="footer-right">
-      <a href="mailto:concierge@handslogistics.com" style="color:var(--muted);text-decoration:none;">concierge&#64;handslogistics.com</a><br>
+      <a href="mailto:concierge@handslogistics.com">concierge&#64;handslogistics.com</a><br>
       Las Vegas, NV 89139
     </div>
   </div>
@@ -250,39 +228,33 @@ var CLOUDINARY_CLOUD  = 'dxkpbjicu';
 var CLOUDINARY_PRESET = 'hands_pod_photos';
 var LOOKUP_ENDPOINT   = '/.netlify/functions/lookup-item';
 var SUBMIT_ENDPOINT   = '/.netlify/functions/submit-pod';
+var PREVIEW_ENDPOINT  = '/.netlify/functions/preview-pod';
+var uploadedUrls      = null;
 
-// Parse PO number immediately
+// Parse PO from URL
 var poNumber = '';
 try { poNumber = new URLSearchParams(window.location.search).get('po') || ''; } catch(e) {}
 
-// Set PO display immediately — no waiting
+// Show PO immediately
 if (poNumber) {
-  document.getElementById('poDisplay').textContent      = poNumber;
-  document.getElementById('accountDisplay').textContent = 'Loading...';
-  document.getElementById('projectDisplay').textContent = 'Loading...';
+  document.getElementById('poDisplay').textContent = poNumber;
 }
 
+// Fetch order details — exact code that works in console
 function fetchItem() {
-  var po = '';
-  try { po = new URLSearchParams(window.location.search).get('po') || ''; } catch(e) {}
-  if (!po) return;
-  poNumber = po;
-  document.getElementById('poDisplay').textContent = po;
-  fetch(LOOKUP_ENDPOINT + '?po=' + po)
-    .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+  if (!poNumber) return;
+  fetch(LOOKUP_ENDPOINT + '?po=' + poNumber)
+    .then(function(r) { return r.json(); })
     .then(function(d) {
+      document.getElementById('poDisplay').textContent      = d.itemId      || poNumber;
       document.getElementById('accountDisplay').textContent = d.account     || '—';
       document.getElementById('projectDisplay').textContent = d.projectName || '—';
     })
-    .catch(function() {
-      document.getElementById('accountDisplay').textContent = '—';
-      document.getElementById('projectDisplay').textContent = '—';
-    });
+    .catch(function(err) { console.warn('lookup failed:', err); });
 }
 
-// Run immediately, then again after 500ms as a safety net
-fetchItem();
-setTimeout(fetchItem, 500);
+// Run after page is fully loaded
+window.addEventListener('load', fetchItem);
 
 function previewPhoto(n) {
   var f = document.getElementById('file'+n).files[0];
@@ -300,6 +272,16 @@ function previewPhoto(n) {
 function showError(m) { var e=document.getElementById('errorBox'); e.textContent=m; e.classList.add('show'); }
 function hideError()  { document.getElementById('errorBox').classList.remove('show'); }
 function setProgress(p,m) { document.getElementById('progressFill').style.width=p+'%'; document.getElementById('progressText').textContent=m; }
+
+function validateForm() {
+  var f1 = document.getElementById('file1').files[0];
+  var rb = document.getElementById('receivedBy').value.trim();
+  if (!f1) { showError('Please add at least one photo before submitting.'); return null; }
+  if (!rb) { document.getElementById('field-receivedBy').classList.add('has-error'); showError('Please enter the name of the person who received the delivery.'); return null; }
+  document.getElementById('field-receivedBy').classList.remove('has-error');
+  hideError();
+  return rb;
+}
 
 function uploadFile(file, idx, total) {
   return new Promise(function(resolve, reject) {
@@ -321,110 +303,59 @@ function uploadFile(file, idx, total) {
   });
 }
 
-var PREVIEW_ENDPOINT = '/.netlify/functions/preview-pod';
-var uploadedUrls     = null; // cached after first preview upload
-
-function sendToBackend(urls, receivedBy) {
-  return fetch(SUBMIT_ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      itemId:      poNumber,
-      photoUrl:    urls[0] || '',
-      photoUrl2:   urls[1] || '',
-      photoUrl3:   urls[2] || '',
-      photoUrl4:   urls[3] || '',
-      receivedBy:  receivedBy,
-      submittedAt: new Date().toISOString()
-    })
-  });
-}
-
-function validateForm() {
-  var f1 = document.getElementById('file1').files[0];
-  var rb = document.getElementById('receivedBy').value.trim();
-  if (!f1) { showError('Please add at least one photo before previewing.'); return null; }
-  if (!rb) { document.getElementById('field-receivedBy').classList.add('has-error'); showError('Please enter the name of the person who received the delivery.'); return null; }
-  document.getElementById('field-receivedBy').classList.remove('has-error');
-  hideError();
-  return rb;
-}
-
 function startPreview() {
   var rb = validateForm();
   if (!rb) return;
+  var btn = document.getElementById('previewBtn');
+  var btn2 = document.getElementById('previewAgainBtn');
+  var active = (btn2 && btn2.offsetParent) ? btn2 : btn;
+  active.disabled = true;
+  active.textContent = 'Sending preview...';
 
-  var prevBtn   = document.getElementById('previewBtn');
-  var prevAgain = document.getElementById('previewAgainBtn');
-  var activeBtn = prevAgain && prevAgain.style.display !== 'none' ? prevAgain : prevBtn;
-
-  activeBtn.disabled = true;
-  activeBtn.textContent = 'Sending preview...';
-
-  // If photos already uploaded, skip re-upload
-  if (uploadedUrls) {
-    sendPreviewEmail(uploadedUrls, rb, activeBtn);
-    return;
+  function sendPreview(urls) {
+    fetch(PREVIEW_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ itemId: poNumber, photoUrl: urls[0]||'', photoUrl2: urls[1]||'', receivedBy: rb })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      active.disabled = false;
+      active.innerHTML = '&#8635; Send Preview Again';
+      var banner = document.getElementById('previewSent');
+      var clientMsg = d.clientEmail ? ' &mdash; will send to <strong>' + d.clientEmail + '</strong>' : ' &mdash; no client email on file';
+      banner.innerHTML = '&#10003; Preview sent to jon&#64; &amp; charles&#64;handslogistics.com' + clientMsg;
+      banner.classList.add('show');
+      document.getElementById('previewBtn').style.display = 'none';
+      document.getElementById('stepActions').classList.add('show');
+    })
+    .catch(function(err) {
+      active.disabled = false;
+      active.innerHTML = '&#128064; Preview Email Before Sending';
+      showError('Preview failed: ' + err.message);
+    });
   }
 
-  // Upload photos first
+  if (uploadedUrls) { sendPreview(uploadedUrls); return; }
+
   var f1=document.getElementById('file1').files[0], f2=document.getElementById('file2').files[0],
       f3=document.getElementById('file3').files[0], f4=document.getElementById('file4').files[0];
   var files = [f1,f2,f3,f4].filter(Boolean);
-
   document.getElementById('progressWrap').classList.add('show');
-  setProgress(0, 'Uploading photos for preview...');
-
+  setProgress(0, 'Uploading photos...');
   Promise.all(files.map(function(f,i) { return uploadFile(f, i+1, files.length); }))
     .then(function(urls) {
       uploadedUrls = urls;
       setProgress(100, 'Photos uploaded.');
-      setTimeout(function() { document.getElementById('progressWrap').classList.remove('show'); }, 1000);
-      sendPreviewEmail(urls, rb, activeBtn);
+      setTimeout(function() { document.getElementById('progressWrap').classList.remove('show'); }, 800);
+      sendPreview(urls);
     })
     .catch(function(err) {
-      activeBtn.disabled = false;
-      activeBtn.innerHTML = '&#128064; Preview Email Before Sending';
+      active.disabled = false;
+      active.innerHTML = '&#128064; Preview Email Before Sending';
       showError('Upload failed: ' + err.message);
       document.getElementById('progressWrap').classList.remove('show');
     });
-}
-
-function sendPreviewEmail(urls, rb, activeBtn) {
-  fetch(PREVIEW_ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      itemId:     poNumber,
-      photoUrl:   urls[0] || '',
-      photoUrl2:  urls[1] || '',
-      receivedBy: rb
-    })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    activeBtn.disabled = false;
-    if (d.clientEmail) {
-      activeBtn.innerHTML = '&#8635; Send Preview Again';
-    } else {
-      activeBtn.innerHTML = '&#8635; Send Preview Again';
-    }
-
-    // Show preview sent banner
-    var banner = document.getElementById('previewSent');
-    var clientMsg = d.clientEmail ? ' — will send to <strong>' + d.clientEmail + '</strong>' : ' — no client email on file, will send to HANDS team only';
-    banner.innerHTML = '&#10003; Preview sent to jon&#64; &amp; charles&#64;handslogistics.com' + clientMsg;
-    banner.classList.add('show');
-
-    // Show confirm button, hide original preview button
-    document.getElementById('previewBtn').style.display = 'none';
-    document.getElementById('stepActions').classList.add('show');
-  })
-  .catch(function(err) {
-    activeBtn.disabled = false;
-    activeBtn.innerHTML = '&#128064; Preview Email Before Sending';
-    showError('Preview failed: ' + err.message);
-  });
 }
 
 function startUpload() {
@@ -435,37 +366,16 @@ function startUpload() {
   btn.innerHTML = 'Sending... <span class="btn-arrow">&#8635;</span>';
   document.getElementById('progressWrap').classList.add('show');
 
-  // Use cached URLs if photos were already uploaded during preview
-  if (uploadedUrls) {
-    setProgress(60, 'Saving to Operations Board...');
-    sendToBackend(uploadedUrls, rb)
-      .then(function() {
-        setProgress(100, 'Done!');
-        setTimeout(function() {
-          document.getElementById('mainForm').style.display = 'none';
-          document.getElementById('successScreen').classList.add('show');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 500);
+  function submit(urls) {
+    setProgress(80, 'Saving to Operations Board...');
+    fetch(SUBMIT_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        itemId: poNumber, photoUrl: urls[0]||'', photoUrl2: urls[1]||'',
+        photoUrl3: urls[2]||'', photoUrl4: urls[3]||'',
+        receivedBy: rb, submittedAt: new Date().toISOString()
       })
-      .catch(function(err) {
-        btn.disabled = false;
-        btn.innerHTML = 'Confirm &amp; Send to Client <span class="btn-arrow">&#8594;</span>';
-        showError('Submission failed: ' + err.message);
-        document.getElementById('progressWrap').classList.remove('show');
-      });
-    return;
-  }
-
-  // No cached URLs — upload fresh (e.g. if preview was skipped)
-  setProgress(0, 'Starting upload...');
-  var f1=document.getElementById('file1').files[0], f2=document.getElementById('file2').files[0],
-      f3=document.getElementById('file3').files[0], f4=document.getElementById('file4').files[0];
-  var files = [f1,f2,f3,f4].filter(Boolean);
-  Promise.all(files.map(function(f,i) { return uploadFile(f, i+1, files.length); }))
-    .then(function(urls) {
-      uploadedUrls = urls;
-      setProgress(85, 'Saving to Operations Board...');
-      return sendToBackend(urls, rb).then(function() { return urls; });
     })
     .then(function() {
       setProgress(100, 'Done!');
@@ -478,4 +388,26 @@ function startUpload() {
     .catch(function(err) {
       btn.disabled = false;
       btn.innerHTML = 'Confirm &amp; Send to Client <span class="btn-arrow">&#8594;</span>';
-      document.getEl
+      showError('Submission failed: ' + err.message);
+      document.getElementById('progressWrap').classList.remove('show');
+    });
+  }
+
+  if (uploadedUrls) { submit(uploadedUrls); return; }
+
+  var f1=document.getElementById('file1').files[0], f2=document.getElementById('file2').files[0],
+      f3=document.getElementById('file3').files[0], f4=document.getElementById('file4').files[0];
+  var files = [f1,f2,f3,f4].filter(Boolean);
+  setProgress(0, 'Uploading photos...');
+  Promise.all(files.map(function(f,i) { return uploadFile(f, i+1, files.length); }))
+    .then(function(urls) { uploadedUrls = urls; submit(urls); })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.innerHTML = 'Confirm &amp; Send to Client <span class="btn-arrow">&#8594;</span>';
+      showError('Upload failed: ' + err.message);
+      document.getElementById('progressWrap').classList.remove('show');
+    });
+}
+</script>
+</body>
+</html>
