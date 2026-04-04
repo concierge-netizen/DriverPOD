@@ -218,14 +218,16 @@ exports.handler = async function(event) {
     const clientName      = getCol(columns, 'text')          || 'Valued Client';
     const account         = getCol(columns, 'text4')         || '';
     const projectName     = getCol(columns, 'text5')         || '';
-    const deliveryDate    = getCol(columns, 'text2')         || (submittedAt ? submittedAt.slice(0,10) : 'TBD');
-    const deliveryTime    = getCol(columns, 'text9')         || 'TBD';
     const deliveryAddress = getCol(columns, 'long_text8')    || 'N/A';
     const description     = getCol(columns, 'long_text')     || 'See order details on file.';
     const clientEmail     = getCol(columns, 'client_email1') || '';
     const receivedByFinal = receivedBy || getCol(columns, 'text_mm1p831b') || 'Driver';
     const photo1          = photoUrl  || getLinkUrl(columns, 'link_mm1pgr61');
     const photo2          = photoUrl2 || getLinkUrl(columns, 'link_mm1pay5j');
+
+    // Use driver-confirmed date/time from submission — fall back to scheduled if not provided
+    const emailDate = deliveredDate || getCol(columns, 'text2') || (submittedAt ? submittedAt.slice(0,10) : 'TBD');
+    const emailTime = deliveredTime || getCol(columns, 'text9') || 'TBD';
 
     // 3. Send email (non-fatal — monday write already succeeded)
     let emailSent = false;
@@ -235,7 +237,7 @@ exports.handler = async function(event) {
 
       const subject   = 'Proof of Delivery — PO #' + pulseId + ' | ' + projectName;
       const emailHtml = buildEmail({ pulseId, clientName, account, projectName, receivedBy: receivedByFinal,
-                                     description, deliveryDate, deliveryTime, deliveryAddress,
+                                     description, deliveryDate: emailDate, deliveryTime: emailTime, deliveryAddress,
                                      photoUrl: photo1, photoUrl2: photo2 });
 
       const toAddresses = clientEmail ? [clientEmail] : CC_ALWAYS;
