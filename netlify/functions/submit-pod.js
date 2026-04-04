@@ -44,9 +44,7 @@ async function writeToMonday(itemId, photoUrl, photoUrl2, receivedBy, deliveredD
   const cols = {};
 
   cols['text_mm1p831b'] = receivedBy || '';
-  cols['color_mm1qkyf'] = { label: 'No' };
-
-  // Delivered On (text0) and Delivered Time (text00) — driver-confirmed date/time
+  cols['color_mm1qkyf'] = { index: 5 };  // Reset SEND POD to blank (index 5)
   if (deliveredDate) cols['text0']  = deliveredDate;
   if (deliveredTime) cols['text00'] = deliveredTime;
 
@@ -229,20 +227,33 @@ exports.handler = async function(event) {
     const photo1          = photoUrl  || getLinkUrl(columns, 'link_mm1pgr61');
     const photo2          = photoUrl2 || getLinkUrl(columns, 'link_mm1pay5j');
 
-    // 3. Send email
-    const subject   = 'Proof of Delivery — PO #' + pulseId + ' | ' + projectName;
-    const emailHtml = buildEmail({ pulseId, clientName, account, projectName, receivedBy: receivedByFinal,
-                                   description, deliveryDate, deliveryTime, deliveryAddress,
-                                   photoUrl: photo1, photoUrl2: photo2 });
+    // 3. Send email (non-fatal — monday write already succeeded)
+    let emailSent = false;
+    let emailError = '';
+    try {
+      if (!RESEND_KEY) throw new Error('RESEND_KEY not set in environment variables');
 
-    const toAddresses = clientEmail ? [clientEmail] : CC_ALWAYS;
-    const ccAddresses = clientEmail ? CC_ALWAYS    : [];
+      const subject   = 'Proof of Delivery — PO #' + pulseId + ' | ' + projectName;
+      const emailHtml = buildEmail({ pulseId, clientName, account, projectName, receivedBy: receivedByFinal,
+                                     description, deliveryDate, deliveryTime, deliveryAddress,
+                                     photoUrl: photo1, photoUrl2: photo2 });
 
-    await fetch('https://api.resend.com/emails', {
-      method:  'POST',
-      headers: { 'Authorization': 'Bearer ' + RESEND_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: FROM, to: toAddresses, cc: ccAddresses, subject, html: emailHtml })
-    });
+      const toAddresses = clientEmail ? [clientEmail] : CC_ALWAYS;
+      const ccAddresses = clientEmail ? CC_ALWAYS    : [];
+
+      const emailRes = await fetch('https://api.resend.com/emails', {
+        method:  'POST',
+        headers: { 'Authorization': 'Bearer ' + RESEND_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: FROM, to: toAddresses, cc: ccAddresses, subject, html: emailHtml })
+      });
+      const emailData = await emailRes.json();
+      if (!emailRes.ok) throw new Error('Resend error: ' + JSON.stringify(emailData));
+      emailSent = true;
+      console.log('POD email sent to:', toAddresses);
+    } catch(e) {
+      emailError = e.message;
+      console.error('Email send failed (non-fatal):', e.message);
+    }
 
     // 4. Post monday update (non-fatal)
     try {
@@ -254,7 +265,7 @@ exports.handler = async function(event) {
     return {
       statusCode: 200,
       headers: CORS,
-      body: JSON.stringify({ success: true, emailSent: true, to: toAddresses })
+      body: JSON.stringify({ success: true, emailSent, emailError: emailError || undefined })
     };
 
   } catch (err) {
