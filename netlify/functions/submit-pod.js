@@ -40,17 +40,16 @@ async function mondayQuery(query, variables) {
   return data;
 }
 
-async function writeToMonday(itemId, photoUrl, photoUrl2, receivedBy) {
-  // Build column values object cleanly — no undefined values
+async function writeToMonday(itemId, photoUrl, photoUrl2, receivedBy, deliveredDate, deliveredTime) {
   const cols = {};
 
-  // Received By — plain text column
   cols['text_mm1p831b'] = receivedBy || '';
-
-  // Reset SEND POD status
   cols['color_mm1qkyf'] = { label: 'No' };
 
-  // Photo links — only include if we have a URL
+  // Delivered On (text0) and Delivered Time (text00) — driver-confirmed date/time
+  if (deliveredDate) cols['text0']  = deliveredDate;
+  if (deliveredTime) cols['text00'] = deliveredTime;
+
   if (photoUrl)  cols['link_mm1pgr61'] = { url: photoUrl,  text: 'POD Photo 1' };
   if (photoUrl2) cols['link_mm1pay5j'] = { url: photoUrl2, text: 'POD Photo 2' };
 
@@ -204,14 +203,14 @@ exports.handler = async function(event) {
 
   try {
     const body = JSON.parse(event.body);
-    const { itemId, photoUrl, photoUrl2, receivedBy, submittedAt } = body;
+    const { itemId, photoUrl, photoUrl2, receivedBy, deliveredDate, deliveredTime, submittedAt } = body;
 
     if (!itemId) throw new Error('Missing itemId');
 
-    console.log('submit-pod called — itemId:', itemId, 'receivedBy:', receivedBy);
+    console.log('submit-pod called — itemId:', itemId, 'receivedBy:', receivedBy, 'date:', deliveredDate, 'time:', deliveredTime);
 
     // 1. Write to monday
-    await writeToMonday(itemId, photoUrl || '', photoUrl2 || '', receivedBy || '');
+    await writeToMonday(itemId, photoUrl || '', photoUrl2 || '', receivedBy || '', deliveredDate || '', deliveredTime || '');
 
     // 2. Fetch full item for email
     const item    = await fetchItemData(itemId);
