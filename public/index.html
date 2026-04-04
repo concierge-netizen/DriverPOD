@@ -172,11 +172,21 @@ body{background:var(--black);color:var(--text);font-family:var(--font-body);font
     </div>
 
     <div class="form-card">
-      <div class="card-header"><p>02 &mdash; Recipient Confirmation</p></div>
+      <div class="card-header"><p>02 &mdash; Delivery Confirmation</p></div>
       <div class="card-body">
         <div class="field" id="field-receivedBy">
           <label>Received By <span class="req">*</span></label>
           <input type="text" id="receivedBy" placeholder="Full name of person who received the delivery" autocomplete="name">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">
+          <div class="field" style="margin-bottom:0;">
+            <label>Delivery Date</label>
+            <input type="date" id="deliveredDate" style="color-scheme:dark;">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>Delivery Time</label>
+            <input type="time" id="deliveredTime" style="color-scheme:dark;">
+          </div>
         </div>
       </div>
     </div>
@@ -249,6 +259,37 @@ function fetchItem() {
       document.getElementById('poDisplay').textContent      = d.itemId      || poNumber;
       document.getElementById('accountDisplay').textContent = d.account     || '—';
       document.getElementById('projectDisplay').textContent = d.projectName || '—';
+
+      // Pre-fill delivery date from monday if available
+      if (d.deliveryDate) {
+        var raw = d.deliveryDate.trim();
+        // Try to parse into YYYY-MM-DD for the date input
+        var parsed = null;
+        // Format: YYYY-MM-DD already
+        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+          parsed = raw;
+        } else {
+          // Try JS Date parse for formats like "April 3, 2026" or "MARCH 27, 2026"
+          var dt = new Date(raw);
+          if (!isNaN(dt.getTime())) {
+            var y = dt.getFullYear();
+            var m = String(dt.getMonth()+1).padStart(2,'0');
+            var day = String(dt.getDate()).padStart(2,'0');
+            parsed = y + '-' + m + '-' + day;
+          }
+        }
+        if (parsed) document.getElementById('deliveredDate').value = parsed;
+      }
+      // Pre-fill time if available
+      if (d.deliveryTime) {
+        var t = d.deliveryTime.trim();
+        // Only pre-fill if it looks like HH:MM
+        if (/^\d{1,2}:\d{2}/.test(t)) {
+          var parts = t.split(':');
+          document.getElementById('deliveredTime').value =
+            String(parseInt(parts[0])).padStart(2,'0') + ':' + parts[1].substring(0,2);
+        }
+      }
     })
     .catch(function(err) { console.warn('lookup failed:', err); });
 }
@@ -374,7 +415,10 @@ function startUpload() {
       body: JSON.stringify({
         itemId: poNumber, photoUrl: urls[0]||'', photoUrl2: urls[1]||'',
         photoUrl3: urls[2]||'', photoUrl4: urls[3]||'',
-        receivedBy: rb, submittedAt: new Date().toISOString()
+        receivedBy: rb,
+        deliveredDate: document.getElementById('deliveredDate').value || '',
+        deliveredTime: document.getElementById('deliveredTime').value || '',
+        submittedAt: new Date().toISOString()
       })
     })
     .then(function() {
