@@ -421,7 +421,12 @@ function startUpload() {
         submittedAt: new Date().toISOString()
       })
     })
-    .then(function() {
+    .then(function(r) {
+      if (!r.ok) throw new Error('Server error ' + r.status);
+      return r.json();
+    })
+    .then(function(d) {
+      if (d && d.success === false) throw new Error(d.error || 'Submission failed');
       setProgress(100, 'Done!');
       setTimeout(function() {
         document.getElementById('mainForm').style.display = 'none';
@@ -432,7 +437,7 @@ function startUpload() {
     .catch(function(err) {
       btn.disabled = false;
       btn.innerHTML = 'Confirm &amp; Send to Client <span class="btn-arrow">&#8594;</span>';
-      showError('Submission failed: ' + err.message);
+      showError('Submission failed: ' + err.message + '. Please try again or contact concierge@handslogistics.com');
       document.getElementById('progressWrap').classList.remove('show');
     });
   }
