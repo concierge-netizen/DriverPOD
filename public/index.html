@@ -180,13 +180,17 @@ body{background:var(--black);color:var(--text);font-family:var(--font-body);font
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">
           <div class="field" style="margin-bottom:0;">
-            <label>Delivery Date</label>
+            <label>Date Delivered <span class="req">*</span></label>
             <input type="date" id="deliveredDate" style="color-scheme:dark;">
           </div>
           <div class="field" style="margin-bottom:0;">
-            <label>Delivery Time</label>
+            <label>Time Delivered <span class="req">*</span></label>
             <input type="time" id="deliveredTime" style="color-scheme:dark;">
           </div>
+        </div>
+        <div class="field" id="field-ccEmails" style="margin-top:14px;">
+          <label>CC Additional Recipients <span style="opacity:0.5;font-weight:normal;">(optional)</span></label>
+          <input type="text" id="ccEmails" placeholder="email1@co.com, email2@co.com" autocomplete="off" inputmode="email">
         </div>
       </div>
     </div>
@@ -217,7 +221,7 @@ body{background:var(--black);color:var(--text);font-family:var(--font-body);font
   <div class="success-screen" id="successScreen">
     <div class="success-icon">&#10003;</div>
     <h2>Delivery Confirmed</h2>
-    <p>Your photos have been uploaded and saved to the Operations Board. The job is complete.</p>
+    <p id="successMessage">Photos saved to the Operations Board and the POD email has been sent to the client. You can close this page.</p>
   </div>
 </main>
 
@@ -250,7 +254,20 @@ if (poNumber) {
   document.getElementById('poDisplay').textContent = poNumber;
 }
 
-// Fetch order details — exact code that works in console
+// Default Date Delivered / Time Delivered to "right now" — driver can adjust.
+// These are the ACTUAL delivered values (not the scheduled ones in Monday).
+(function defaultDateTimeToNow() {
+  var now = new Date();
+  var y = now.getFullYear();
+  var m = String(now.getMonth() + 1).padStart(2, '0');
+  var d = String(now.getDate()).padStart(2, '0');
+  var hh = String(now.getHours()).padStart(2, '0');
+  var mm = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('deliveredDate').value = y + '-' + m + '-' + d;
+  document.getElementById('deliveredTime').value = hh + ':' + mm;
+})();
+
+// Fetch order details for display (Account, Project) — no longer pre-fills date/time
 function fetchItem() {
   if (!poNumber) return;
   fetch(LOOKUP_ENDPOINT + '?po=' + poNumber)
@@ -259,37 +276,6 @@ function fetchItem() {
       document.getElementById('poDisplay').textContent      = d.itemId      || poNumber;
       document.getElementById('accountDisplay').textContent = d.account     || '—';
       document.getElementById('projectDisplay').textContent = d.projectName || '—';
-
-      // Pre-fill delivery date from monday if available
-      if (d.deliveryDate) {
-        var raw = d.deliveryDate.trim();
-        // Try to parse into YYYY-MM-DD for the date input
-        var parsed = null;
-        // Format: YYYY-MM-DD already
-        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-          parsed = raw;
-        } else {
-          // Try JS Date parse for formats like "April 3, 2026" or "MARCH 27, 2026"
-          var dt = new Date(raw);
-          if (!isNaN(dt.getTime())) {
-            var y = dt.getFullYear();
-            var m = String(dt.getMonth()+1).padStart(2,'0');
-            var day = String(dt.getDate()).padStart(2,'0');
-            parsed = y + '-' + m + '-' + day;
-          }
-        }
-        if (parsed) document.getElementById('deliveredDate').value = parsed;
-      }
-      // Pre-fill time if available
-      if (d.deliveryTime) {
-        var t = d.deliveryTime.trim();
-        // Only pre-fill if it looks like HH:MM
-        if (/^\d{1,2}:\d{2}/.test(t)) {
-          var parts = t.split(':');
-          document.getElementById('deliveredTime').value =
-            String(parseInt(parts[0])).padStart(2,'0') + ':' + parts[1].substring(0,2);
-        }
-      }
     })
     .catch(function(err) { console.warn('lookup failed:', err); });
 }
@@ -298,8 +284,17 @@ function fetchItem() {
 window.addEventListener('load', fetchItem);
 
 function previewPhoto(n) {
-  var f = document.getElementById('file'+n).files[0];
+  var input = document.getElementById('file'+n);
+  var f = input.files[0];
   if (!f) return;
+  // Guard large uploads — HEIC/phone photos sometimes exceed Cloudinary's free tier easily
+  var MAX_BYTES = 15 * 1024 * 1024; // 15 MB
+  if (f.size > MAX_BYTES) {
+    input.value = '';
+    showError('Photo ' + n + ' is too large (' + (f.size/1024/1024).toFixed(1) + ' MB). Please use a photo under 15 MB.');
+    return;
+  }
+  hideError();
   var r = new FileReader();
   r.onload = function(e) {
     var img = document.getElementById('preview'+n);
@@ -314,14 +309,41 @@ function showError(m) { var e=document.getElementById('errorBox'); e.textContent
 function hideError()  { document.getElementById('errorBox').classList.remove('show'); }
 function setProgress(p,m) { document.getElementById('progressFill').style.width=p+'%'; document.getElementById('progressText').textContent=m; }
 
+// Simple email regex — good enough for a catch-most validator
+var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function parseCCs(raw) {
+  // Split on commas OR semicolons (people type both), trim, drop empties
+  if (!raw) return { valid: [], invalid: [] };
+  var parts = raw.split(/[,;]/).map(function(s) { return s.trim(); }).filter(Boolean);
+  var valid = [], invalid = [];
+  parts.forEach(function(p) { (EMAIL_REGEX.test(p) ? valid : invalid).push(p); });
+  // Cap at 10
+  if (valid.length > 10) valid = valid.slice(0, 10);
+  return { valid: valid, invalid: invalid };
+}
+
 function validateForm() {
   var f1 = document.getElementById('file1').files[0];
   var rb = document.getElementById('receivedBy').value.trim();
+  var dd = document.getElementById('deliveredDate').value;
+  var dt = document.getElementById('deliveredTime').value;
+  var ccRaw = document.getElementById('ccEmails').value.trim();
+  var cc = parseCCs(ccRaw);
+
   if (!f1) { showError('Please add at least one photo before submitting.'); return null; }
   if (!rb) { document.getElementById('field-receivedBy').classList.add('has-error'); showError('Please enter the name of the person who received the delivery.'); return null; }
+  if (!dd) { showError('Please fill in the Date Delivered.'); return null; }
+  if (!dt) { showError('Please fill in the Time Delivered.'); return null; }
+  if (cc.invalid.length) {
+    document.getElementById('field-ccEmails').classList.add('has-error');
+    showError('CC field has invalid email(s): ' + cc.invalid.join(', ') + '. Please fix or remove them.');
+    return null;
+  }
   document.getElementById('field-receivedBy').classList.remove('has-error');
+  document.getElementById('field-ccEmails').classList.remove('has-error');
   hideError();
-  return rb;
+  return { receivedBy: rb, deliveredDate: dd, deliveredTime: dt, ccEmails: cc.valid };
 }
 
 function uploadFile(file, idx, total) {
@@ -345,8 +367,8 @@ function uploadFile(file, idx, total) {
 }
 
 function startPreview() {
-  var rb = validateForm();
-  if (!rb) return;
+  var form = validateForm();
+  if (!form) return;
   var btn = document.getElementById('previewBtn');
   var btn2 = document.getElementById('previewAgainBtn');
   var active = (btn2 && btn2.offsetParent) ? btn2 : btn;
@@ -357,7 +379,15 @@ function startPreview() {
     fetch(PREVIEW_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ itemId: poNumber, photoUrl: urls[0]||'', photoUrl2: urls[1]||'', receivedBy: rb })
+      body: JSON.stringify({
+        itemId: poNumber,
+        photoUrl:  urls[0] || '',
+        photoUrl2: urls[1] || '',
+        receivedBy: form.receivedBy,
+        deliveredDate: form.deliveredDate,
+        deliveredTime: form.deliveredTime,
+        ccEmails: form.ccEmails
+      })
     })
     .then(function(r) { return r.json(); })
     .then(function(d) {
@@ -365,7 +395,8 @@ function startPreview() {
       active.innerHTML = '&#8635; Send Preview Again';
       var banner = document.getElementById('previewSent');
       var clientMsg = d.clientEmail ? ' &mdash; will send to <strong>' + d.clientEmail + '</strong>' : ' &mdash; no client email on file';
-      banner.innerHTML = '&#10003; Preview sent to jon&#64; &amp; charles&#64;handslogistics.com' + clientMsg;
+      var ccMsg = form.ccEmails.length ? '<br><span style="opacity:0.8;font-size:11px;">CC on real send: ' + form.ccEmails.join(', ') + '</span>' : '';
+      banner.innerHTML = '&#10003; Preview sent to jon&#64; &amp; charles&#64;handslogistics.com' + clientMsg + ccMsg;
       banner.classList.add('show');
       document.getElementById('previewBtn').style.display = 'none';
       document.getElementById('stepActions').classList.add('show');
@@ -400,8 +431,8 @@ function startPreview() {
 }
 
 function startUpload() {
-  var rb = validateForm();
-  if (!rb) return;
+  var form = validateForm();
+  if (!form) return;
   var btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.innerHTML = 'Sending... <span class="btn-arrow">&#8635;</span>';
@@ -413,11 +444,13 @@ function startUpload() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        itemId: poNumber, photoUrl: urls[0]||'', photoUrl2: urls[1]||'',
+        itemId: poNumber,
+        photoUrl:  urls[0]||'', photoUrl2: urls[1]||'',
         photoUrl3: urls[2]||'', photoUrl4: urls[3]||'',
-        receivedBy: rb,
-        deliveredDate: document.getElementById('deliveredDate').value || '',
-        deliveredTime: document.getElementById('deliveredTime').value || '',
+        receivedBy: form.receivedBy,
+        deliveredDate: form.deliveredDate,
+        deliveredTime: form.deliveredTime,
+        ccEmails: form.ccEmails,
         submittedAt: new Date().toISOString()
       })
     })
@@ -428,6 +461,19 @@ function startUpload() {
     .then(function(d) {
       if (d && d.success === false) throw new Error(d.error || 'Submission failed');
       setProgress(100, 'Done!');
+      // Tailor the success message to what actually happened
+      var msgEl = document.getElementById('successMessage');
+      var ccSuffix = (d && d.ccSentTo && d.ccSentTo.length)
+        ? ' (cc: ' + d.ccSentTo.join(', ') + ')'
+        : '';
+      if (d && d.emailSent && d.sentTo) {
+        msgEl.innerHTML = 'Photos saved to the Operations Board and the POD email has been sent to <strong>' + d.sentTo + '</strong>' + ccSuffix + '. You can close this page.';
+      } else if (d && d.emailSent) {
+        msgEl.textContent = 'Photos saved to the Operations Board and the POD email has been sent' + ccSuffix + '. You can close this page.';
+      } else {
+        // Submission succeeded but email didn't — still a win, but flag it
+        msgEl.innerHTML = 'Photos saved to the Operations Board. <strong>The POD email did not send</strong> — please notify concierge@handslogistics.com to resend manually.';
+      }
       setTimeout(function() {
         document.getElementById('mainForm').style.display = 'none';
         document.getElementById('successScreen').classList.add('show');
