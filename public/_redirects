@@ -1,0 +1,4 @@
+# HANDS Phase 3 — DriverPOD retired, redirect everything to DCConfirm
+# Netlify preserves query string on 301s automatically (e.g. /?po=12345 → /pod?po=12345)
+/    https://ops.handslogistics.com/pod    301
+/*   https://ops.handslogistics.com/pod    301
